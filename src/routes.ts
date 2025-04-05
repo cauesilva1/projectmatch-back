@@ -1,70 +1,35 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { validateUser } from './middleware/validateUser'; // Middleware de validação
+import { authenticateGitHubUser } from './services/authservice';
 
 const router = Router();
 const prisma = new PrismaClient();
 
-// Rota para criar um novo usuário com validação
-//router.post('/users', validateUser, async (req, res) => {
- //   const { name, email, password } = req.body;
-//
-  //  try {
-    //    const newUser = await prisma.user.create({
-      //      data: {
-        //        name,
-        //        email,
-         //       password,
-        //    },
-       // });
-       // res.status(201).json(newUser);
-    //} catch (error) {
-      //  console.error(error);
-        //res.status(500).json({ error: 'Erro ao criar usuário' });
-    //}
-//});
-
 // Rota para autenticação via GitHub
-router.post('/auth/github', async (req, res) => {
-    const { uid, displayName, email, photoURL, createdAt, lastLoginAt } = req.body;
+router.post('/auth/github', async (req: Request, res: Response): Promise<void> => {
+    const { token } = req.body; // Recebe apenas o token do front-end
 
+    if (!token) {
+        res.status(400).json({ error: 'Token não fornecido.' });
+        return;
+    }
+        console.log('Token recebido:', token); // Log do token recebido
     try {
-        // Verifica se o usuário já existe no banco de dados
-        let user = await prisma.user.findUnique({
-            where: { email },
-        });
-
-        if (!user) {
-            // Cria um novo usuário se ele não existir
-            user = await prisma.user.create({
-                data: {
-                    uid,
-                    name: displayName,
-                    email,
-                    photoURL,
-                    createdAt: new Date(createdAt), // Converte string para Date
-                    lastLoginAt: new Date(lastLoginAt), // Converte string para Date
-                },
-            });
-        } else {
-            // Atualiza o último login do usuário existente
-            user = await prisma.user.update({
-                where: { email },
-                data: {
-                    lastLoginAt: new Date(lastLoginAt),
-                },
-            });
-        }
-
+        // Chama o serviço para autenticar o usuário com o token
+        const user = await authenticateGitHubUser(token);
         res.status(200).json(user);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Erro ao autenticar usuário via GitHub' });
+        if (error instanceof Error) {
+            console.error('Erro ao autenticar usuário via GitHub:', error.message);
+        } else {
+            console.error('Erro ao autenticar usuário via GitHub:', error);
+        }
+        res.status(500).json({ error: error instanceof Error ? error.message : 'Erro desconhecido' });
     }
 });
 
 // Rota para listar todos os usuários
-router.get('/users', async (req, res) => {
+router.get('/users', async (req: Request, res: Response): Promise<void> => {
     try {
         const users = await prisma.user.findMany();
         res.status(200).json(users);
@@ -75,7 +40,7 @@ router.get('/users', async (req, res) => {
 });
 
 // Rota de exemplo existente
-router.get('/Login', (req, res) => {
+router.get('/Login', (req: Request, res: Response): void => {
     res.status(200).json({ message: 'Rota de login funcionando!' });
 });
 

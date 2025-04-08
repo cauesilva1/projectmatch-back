@@ -8,35 +8,35 @@ datasource db {
 }
 
 model User {
-  id                 Int       @id @default(autoincrement())
-  uid                String    @unique
-  name               String
-  email              String    @unique
-  photoURL           String?
-  createdAt          DateTime  @default(now())
-  lastLoginAt        DateTime
-  createdProjects    Project[] @relation("CreatedProjects") // Relacionamento com projetos criados
-  participatedProjects ProjectParticipation[] // Relacionamento com projetos participados
+  id                   Int                    @id @default(autoincrement())
+  uid                  String                 @unique
+  name                 String
+  email                String                 @unique
+  photoURL             String?
+  createdAt            DateTime               @default(now())
+  lastLoginAt          DateTime
+  createdProjects      Project[]              @relation("CreatedProjects")
+  participatedProjects ProjectParticipation[]
 }
 
 model Project {
-  id          Int       @id @default(autoincrement())
-  title       String
-  description String
-  createdAt   DateTime  @default(now())
-  owner       User      @relation("CreatedProjects", fields: [ownerId], references: [id])
-  ownerId     Int
-  participants ProjectParticipation[] // Relacionamento com participações
-  languages   String[] // Adicionado para armazenar as linguagens do projeto
-  githubLink  String    // Link do repositório no GitHub
+  id           Int                    @id @default(autoincrement())
+  title        String
+  description  String
+  createdAt    DateTime               @default(now())
+  ownerId      Int
+  languages    String[]
+  githubLink   String
+  owner        User                   @relation("CreatedProjects", fields: [ownerId], references: [id])
+  participants ProjectParticipation[]
 }
 
 model ProjectParticipation {
-  id         Int      @id @default(autoincrement())
-  user       User     @relation(fields: [userId], references: [id])
-  userId     Int
-  project    Project  @relation(fields: [projectId], references: [id])
-  projectId  Int
-  joinedAt   DateTime @default(now())
-  isActive   Boolean  @default(false) // Indica se o participante está ativo ou inativo
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  projectId Int
+  joinedAt  DateTime @default(now())
+  isActive  Boolean  @default(false)
+  project   Project  @relation(fields: [projectId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }

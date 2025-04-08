@@ -1,11 +1,10 @@
 import { Router, Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from './prisma'; 
 import { authenticateGitHubUser } from './services/authservice';
 import { getRepositoryInfo } from './services/getRepositoryInfo'; // Função para buscar informações do repositório
 import axios from 'axios';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // Rota para autenticação via GitHub
 router.post('/auth/github', async (req: Request, res: Response): Promise<void> => {

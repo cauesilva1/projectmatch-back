@@ -30,9 +30,10 @@ router.post('/auth/github', async (req: Request, res: Response): Promise<void> =
 });
 
 // Rota para buscar informações de um projeto específico
-router.get('/project/:id', async (req: Request, res: Response): Promise<void> => {
-    const { id } = req.params; // Recebe o ID do projeto da URL
-
+router.get('/project', async (req: Request, res: Response): Promise<void> => {
+    
+    const { id } = req.query; // Recebe o ID do projeto da URL
+    
     console.log('ID do projeto recebido:', id); // Log do ID do projeto recebido
 
     try {
@@ -95,13 +96,12 @@ router.get('/project/:id', async (req: Request, res: Response): Promise<void> =>
 
 //Rota para fazer a busca de solicitações de participação
 router.get('/project/:id/requests', async (req: Request, res: Response): Promise<void> => {
-    const projectId = parseInt(req.params.id); // Pega o ID da URL
-    const uid = req.query.uid;
-    console.log('ID do projeto recebido:', uid); // Log do ID do projeto recebido
+    const { id } = req.params; // Recebe o ID do projeto da URL
+    console.log('ID do projeto recebido:', id); // Log do ID do projeto recebido
     try {
         // Busca o projeto com base no ID
         const project = await prisma.project.findUnique({
-            where: { id: Number(uid) }, // Converte o ID para um number
+            where: { id: Number(id) }, // Converte o ID para um number
             include: {
                 participants: {
                     include: {

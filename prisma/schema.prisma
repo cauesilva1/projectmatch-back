@@ -27,6 +27,8 @@ model Project {
   owner       User      @relation("CreatedProjects", fields: [ownerId], references: [id])
   ownerId     Int
   participants ProjectParticipation[] // Relacionamento com participações
+  languages   String[] // Adicionado para armazenar as linguagens do projeto
+  githubLink  String    // Link do repositório no GitHub
 }
 
 model ProjectParticipation {
@@ -36,4 +38,5 @@ model ProjectParticipation {
   project    Project  @relation(fields: [projectId], references: [id])
   projectId  Int
   joinedAt   DateTime @default(now())
+  isActive   Boolean  @default(false) // Indica se o participante está ativo ou inativo
 }

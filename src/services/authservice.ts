@@ -13,7 +13,7 @@ export const authenticateGitHubUser = async (token: string) => {
             },
         });
 
-        let { id: uid, name: displayName, email, avatar_url: photoURL } = githubResponse.data;
+        let { id: uid, name: displayName, email, avatar_url: photoURL, bio, blog, location, public_repos, followers, following } = githubResponse.data;
 
         // Se o e-mail não estiver disponível, busca os e-mails do usuário
         if (!email) {
@@ -60,7 +60,18 @@ export const authenticateGitHubUser = async (token: string) => {
             });
         }
 
-        return user;
+        // Retorna o usuário e as informações adicionais para o front-end
+        return {
+            user,
+            additionalInfo: {
+                bio,
+                blog,
+                location,
+                public_repos,
+                followers,
+                following,
+            },
+        };
     } catch (error) {
         if (error instanceof Error) {
             console.error('Erro ao autenticar usuário via GitHub:', error.message);

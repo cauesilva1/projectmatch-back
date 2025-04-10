@@ -18,6 +18,7 @@ router.post('/auth/github', async (req: Request, res: Response): Promise<void> =
     try {
         // Chama o serviço para autenticar o usuário com o token
         const user = await authenticateGitHubUser(token);
+        console.log("aqui esta o user:",user)
         res.status(200).json(user);
     } catch (error) {
         if (error instanceof Error) {
@@ -30,10 +31,10 @@ router.post('/auth/github', async (req: Request, res: Response): Promise<void> =
 });
 
 // Rota para buscar informações de um projeto específico
-router.get('/project', async (req: Request, res: Response): Promise<void> => {
+router.get('/project/', async (req: Request, res: Response): Promise<void> => {
     
     const { id } = req.query; // Recebe o ID do projeto da URL
-    
+
     console.log('ID do projeto recebido:', id); // Log do ID do projeto recebido
 
     try {
@@ -290,7 +291,7 @@ router.get('/projectsbyowner', async (req: Request, res: Response): Promise<void
 router.post('/Addproject', async (req: Request, res: Response): Promise<void> => {
     const { uid: ownerUid, name: title, description, githubLink: url } = req.body;
 
-    console.log('Dados recebidos para criar projeto:', req.body); // Log dos dados recebidos
+    console.log('Dados recebidos para criar projeto:', url); // Log dos dados recebidos
 
     // Validação dos campos obrigatórios
     if (!title || !description || !url || !ownerUid) {

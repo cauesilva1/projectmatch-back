@@ -31,13 +31,11 @@ export const authenticateGitHubUser = async (token: string) => {
             }
         }
 
-        // Verifica se o usuário já existe no banco de dados
         let user = await prisma.user.findUnique({
             where: { email },
         });
 
         if (!user) {
-            // Cria um novo usuário se ele não existir
             user = await prisma.user.create({
                 data: {
                     uid: String(uid),
@@ -49,7 +47,6 @@ export const authenticateGitHubUser = async (token: string) => {
                 },
             });
         } else {
-            // Atualiza o último login do usuário existente
             user = await prisma.user.update({
                 where: { email },
                 data: {
